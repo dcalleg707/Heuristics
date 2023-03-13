@@ -1,7 +1,7 @@
 from read import getDistanceMatrix, getDemands
 import time
 
-def constructivo(nodes, vehicles, autonomy, capacity, allowUnfeasibleness):
+def constructivo(nodes, vehicles, autonomy, capacity, allowUnfeasibleness= False):
    global time
    start = time.time()
    routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness)
@@ -10,7 +10,7 @@ def constructivo(nodes, vehicles, autonomy, capacity, allowUnfeasibleness):
    return routes, vehicleDistances, time
 
 
-def implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness = False):
+def implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness):
     distanceMatrix = getDistanceMatrix(nodes)
     demands = getDemands(nodes)
     vehicleRoutes = []
