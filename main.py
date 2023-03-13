@@ -1,4 +1,4 @@
-from Read import *
+from read import *
 from constructivo import constructivo
 from store import storeData
 

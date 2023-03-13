@@ -1,4 +1,4 @@
-from Read import getDistanceMatrix, getDemands
+from read import getDistanceMatrix, getDemands
 import time
 
 def constructivo(nodes, vehicles, autonomy, capacity, allowUnfeasibleness):
