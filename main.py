@@ -15,8 +15,6 @@ index = 0
 for route in routes:
     xAxis = [nodes[node][1] for node in route]
     yAxis = [nodes[node][2] for node in route]
-    print(xAxis)
-    print(yAxis)
     axs[index].plot(xAxis, yAxis, label=str(index))
     index += 1
 
