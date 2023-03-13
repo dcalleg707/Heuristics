@@ -1,6 +1,16 @@
 from Read import getDistanceMatrix, getDemands
+import time
 
-def constructivo(nodes, vehicles, autonomy, capacity, allowUnfeasibleness = False):
+def constructivo(nodes, vehicles, autonomy, capacity, allowUnfeasibleness):
+   global time
+   start = time.time()
+   routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness)
+   end = time.time()
+   time = end - start
+   return routes, vehicleDistances, time
+
+
+def implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness = False):
     distanceMatrix = getDistanceMatrix(nodes)
     demands = getDemands(nodes)
     vehicleRoutes = []
@@ -55,6 +65,8 @@ def hasEnoughAutonomy(currentNode, destinyNode, distanceMatrix, traveledDistance
     return  distanceMatrix[currentNode[0]][destinyNode[0]] + distanceMatrix[destinyNode[0]][0] + traveledDistance <= autonomy 
 
     
+
+
 
 
 
