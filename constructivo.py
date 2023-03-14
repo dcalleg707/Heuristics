@@ -1,13 +1,13 @@
 from read import getDistanceMatrix, getDemands
 import time
 
-def constructivo(nodes, vehicles, autonomy, capacity, allowUnfeasibleness= False):
+def constructivo(nodes, vehicles, autonomy, capacity, allowUnfeasibleness= True):
    global time
    start = time.time()
    routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness)
    end = time.time()
-   time = end - start
-   return routes, vehicleDistances, time
+   elapsedTime = end - start
+   return routes, vehicleDistances, elapsedTime
 
 
 def implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness):
@@ -40,9 +40,7 @@ def implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness):
                 vehicleRoutes[i].append(nodes[0])  
     routes = [list(map(lambda node:  node[0],nodes)) for nodes in vehicleRoutes]
     vehicleDistances = list (map(lambda x: round(x, 2),vehicleDistances))
-    print(routes)
-    print(vehicleDistances)
-    print(unvisitedNodes)
+
     return routes, vehicleDistances
     
 

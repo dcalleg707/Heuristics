@@ -1,28 +1,15 @@
 from read import *
 from constructivo import constructivo
+from constructivoOptimizado import constructivoOptimizado
 from store import storeData
-import matplotlib.pyplot as plt
+from graphics import *
 
-file = "test.txt"
+file = "mtVRP12.txt"
 nodesNumber, vehicles, capacity, autonomy, deposit, nodes = getData(file)
 
-routes, distances, time = constructivo(nodes, vehicles, autonomy, capacity, True)
+optimizedRoutes, optimizedDistances, optimizedTime = constructivoOptimizado(nodes, vehicles, autonomy, capacity, False)
+routes, distances, time = constructivo(nodes, vehicles, autonomy, capacity, False)
 storeData(routes, distances, time)
-
-fig, axs = plt.subplots(1, vehicles,  figsize=(9, 9), sharey=True)
-
-index = 0
-for route in routes:
-    xAxis = [node[1] for node in nodes]
-    yAxis = [node[2] for node in nodes]
-    axs[index].scatter(xAxis, yAxis)
-
-    xAxis = [nodes[node][1] for node in route]
-    yAxis = [nodes[node][2] for node in route]
-    axs[index].plot(xAxis, yAxis, label=str(index))
-    index += 1
-
-plt.show()
-
+compare(optimizedRoutes, routes, nodes, sum(optimizedDistances), sum(distances))
 
 
