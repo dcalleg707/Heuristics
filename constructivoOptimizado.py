@@ -2,12 +2,12 @@ from read import getDistanceMatrix, getDemands
 import time
 
 def constructivoOptimizado(nodes, vehicles, autonomy, capacity, allowUnfeasibleness= True):
-   global time
-   start = time.time()
-   routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness)
-   end = time.time()
-   elapsedTime = end - start
-   return routes, vehicleDistances, elapsedTime
+    global time
+    start = time.time()
+    routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness)
+    end = time.time()
+    elapsedTime = end - start
+    return routes, vehicleDistances, elapsedTime
 
 
 def implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness):
