@@ -31,7 +31,7 @@ def showSeparated(routes, nodes):
 
     plt.show()
 
-def compare(routesA, routesB, nodes, distanceA, distanceB):
+def compare(routesA, routesB, nodes, distanceA, distanceB, labelA, labelB):
     fig, axs = plt.subplots(1, 2,  figsize=(9, 9), sharey=True)
 
     
@@ -56,6 +56,6 @@ def compare(routesA, routesB, nodes, distanceA, distanceB):
 
     axs[1].legend()
     axs[0].legend() 
-    fig.suptitle(str(round(distanceA, 2)) + " vs " + str(round(distanceB, 2)))
+    fig.suptitle(labelA +": " + str(round(distanceA, 2)) + " vs " + labelB +  ": "+str(round(distanceB, 2)))
     plt.show()
 

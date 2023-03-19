@@ -10,6 +10,8 @@ def constructivoExperimental(nodes, vehicles, autonomy, capacity, allowUnfeasibl
     additionalRoute, vehicleDistance, _ = implementation([nodes[0]] + unvisitedNodes, 1, autonomy, capacity, True,  distanceMatrix, demands)
     end = time.time()
     elapsedTime = end - start
+    print(routes + additionalRoute)
+    print(vehicleDistances + vehicleDistance)
     return routes + additionalRoute, vehicleDistances + vehicleDistance, elapsedTime
 
 

@@ -2,17 +2,23 @@ from read import getDistanceMatrix, getDemands
 import time
 import random
 
-def grasp(nodes, vehicles, autonomy, capacity, porcentaje, seed=10, allowUnfeasibleness= True):
-   global time
-   random.seed(seed)
-   start = time.time()
-   routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, porcentaje, allowUnfeasibleness)
-   end = time.time()
-   elapsedTime = end - start
-   return routes, vehicleDistances, elapsedTime
+def grasp(nodes, vehicles, autonomy, capacity, alpha, nsol, allowUnfeasibleness= True):
+    global time
+    start = time.time()
+    bestRoutes = None
+    bestDistances = None
+    for i in range(nsol):
+        routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, alpha, allowUnfeasibleness)
+        if not bestDistances or sum(vehicleDistances) < sum(bestDistances):
+            bestRoutes = routes
+            bestDistances = vehicleDistances
+    end = time.time()
+    elapsedTime = end - start
+    print(routes, vehicleDistances)
+    return bestRoutes, bestDistances, elapsedTime
 
 
-def implementation(nodes, vehicles, autonomy, capacity, porcentaje, allowUnfeasibleness ):
+def implementation(nodes, vehicles, autonomy, capacity, alpha, allowUnfeasibleness ):
     distanceMatrix = getDistanceMatrix(nodes)
     demands = getDemands(nodes)
     vehicleRoutes = []
@@ -25,7 +31,7 @@ def implementation(nodes, vehicles, autonomy, capacity, porcentaje, allowUnfeasi
         vehicleDistances.append(0)
 
     while(True):
-        bestTruck, bestNode = getBestArch([route[-1] for route in vehicleRoutes], unvisitedNodes, distanceMatrix, vehicleLoads, vehicleDistances, autonomy, demands, porcentaje, allowUnfeasibleness)
+        bestTruck, bestNode = getBestArch([route[-1] for route in vehicleRoutes], unvisitedNodes, distanceMatrix, vehicleLoads, vehicleDistances, autonomy, demands, alpha, allowUnfeasibleness)
         if not bestNode:
             break
         vehicleDistances[bestTruck] += distanceMatrix[vehicleRoutes[bestTruck][-1][0]][bestNode[0]]
@@ -40,12 +46,9 @@ def implementation(nodes, vehicles, autonomy, capacity, porcentaje, allowUnfeasi
                 vehicleRoutes[i].append(nodes[0])  
     routes = [list(map(lambda node:  node[0],nodes)) for nodes in vehicleRoutes]
     vehicleDistances = list (map(lambda x: round(x, 2),vehicleDistances))
-    print(routes)
-    print(vehicleDistances)
-    print(unvisitedNodes)
     return routes, vehicleDistances
 
-def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, autonomy, demands,  porcentaje, allowUnfeasibleness ):
+def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, autonomy, demands,  alpha, allowUnfeasibleness ):
     minDistance = (-1, None)
     maxDistance = (-1, None)
     candidates = []
@@ -64,7 +67,7 @@ def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, a
         if candidate[0] > maxDistance[0]:
             maxDistance = candidate
     
-    limit = minDistance[0] + porcentaje*(maxDistance[0] - minDistance[0])
+    limit = minDistance[0] + alpha*(maxDistance[0] - minDistance[0])
     trueCandidates = [candidate for candidate in candidates if candidate[0] <= limit]
     chosenOne = trueCandidates[random.randint(0, len(trueCandidates) -1)]
 
