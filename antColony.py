@@ -2,17 +2,17 @@ from read import getDistanceMatrix, getDemands
 import time
 import random
 
-def antColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, p, allowUnfeasibleness=True):
+def antColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowUnfeasibleness=True):
     global time
     start = time.time()
-    routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, p, allowUnfeasibleness)
+    routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowUnfeasibleness)
     end = time.time()
     elapsedTime = end - start
     print(routes, vehicleDistances)
     return routes, vehicleDistances, elapsedTime
 
 
-def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, p, allowUnfeasibleness ):
+def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowUnfeasibleness ):
     distanceMatrix = getDistanceMatrix(nodes)
     demands = getDemands(nodes)
     
@@ -31,7 +31,7 @@ def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, p, allowUnfe
         antTrips = []
         solutionDistances = []
         for l in range(m):
-            routes, distances = getAntRoute(nodes, autonomy, vehicles, distanceMatrix, capacity, demands, pheromoneMatrix, a, b, allowUnfeasibleness)
+            routes, distances = getAntRoute(nodes, autonomy, vehicles, distanceMatrix, capacity, demands, pheromoneMatrix, a, b, c, allowUnfeasibleness)
             distance = sum(distances)
             solutionDistances.append(distance)
             if(distance < minDistance or minDistance == -1):
@@ -56,7 +56,7 @@ def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, p, allowUnfe
 
     return bestRoute, bestDistances
 
-def getAntRoute(nodes, autonomy, vehicles, distanceMatrix, capacity, demands, pheromoneMatrix, a, b,  allowUnfeasibleness):
+def getAntRoute(nodes, autonomy, vehicles, distanceMatrix, capacity, demands, pheromoneMatrix, a, b, c, allowUnfeasibleness):
     vehicleRoutes = []
     vehicleLoads = []
     vehicleDistances = []
@@ -67,7 +67,7 @@ def getAntRoute(nodes, autonomy, vehicles, distanceMatrix, capacity, demands, ph
         vehicleDistances.append(0)
 
     while(True):
-        bestTruck, bestNode = getBestArch([route[-1] for route in vehicleRoutes], unvisitedNodes, distanceMatrix, vehicleLoads, vehicleDistances, autonomy, demands, pheromoneMatrix, a, b, allowUnfeasibleness)
+        bestTruck, bestNode = getBestArch([route[-1] for route in vehicleRoutes], unvisitedNodes, distanceMatrix, vehicleLoads, vehicleDistances, autonomy, demands, pheromoneMatrix, a, b, c, allowUnfeasibleness)
         if not bestNode:
             break
         vehicleDistances[bestTruck] += distanceMatrix[vehicleRoutes[bestTruck][-1][0]][bestNode[0]]
@@ -86,7 +86,7 @@ def getAntRoute(nodes, autonomy, vehicles, distanceMatrix, capacity, demands, ph
 
 
 
-def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, autonomy, demands, pheromoneMatrix, a, b, allowUnfeasibleness ):
+def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, autonomy, demands, pheromoneMatrix, a, b, c, allowUnfeasibleness ):
     candidates = []
     probabilities = []
     sumedDivisor = 0
@@ -94,7 +94,7 @@ def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, a
     for i in range(len(currentNodes)):
         truckCandidates = getvalidNodesDistances(currentNodes[i], nodes, distanceMatrix, loads[i], traveledDistances[i], autonomy, demands, allowUnfeasibleness)
         candidates += list(map( lambda x: x + [i], truckCandidates))
-        localProbability =  list(map( lambda x: (( 1 / x[0]) ** b) * (pheromoneMatrix[currentNodes[i][0]][x[1][0]] ** a), truckCandidates))
+        localProbability =  list(map( lambda x: (( 1 / x[0]) ** b) * (pheromoneMatrix[currentNodes[i][0]][x[1][0]] ** a) * ((1 / max(traveledDistances[i], 1)) ** c), truckCandidates))
         probabilities += localProbability
         sumedDivisor += sum(localProbability)
     

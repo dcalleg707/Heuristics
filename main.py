@@ -15,10 +15,11 @@ m = 2
 Q = 2
 a = 0.5
 b = 1
+c = 0.5
 p = 0.1
 
 
-antRoutes, antDistances, antTime = antColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, p)
+antRoutes, antDistances, antTime = antColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c,  p)
 print(antTime)
 #graspRoutes, graspDistances, graspTime = grasp(nodes, vehicles, autonomy, capacity, alpha, nsol)
 print("-----------------------------------")
