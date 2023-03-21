@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 xlwt = "*"
 matplotlib = "*"
+numpy = "*"
+xlrd = "*"
+xlutils = "*"
 
 [dev-packages]
 

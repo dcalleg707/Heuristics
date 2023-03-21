@@ -1,11 +1,25 @@
 import xlwt
+import os
+import xlrd
+from xlutils.copy import copy as xl_copy
 
-filename = "entrega1.xls"
-
-def storeData(route, distances, time):
-    wb = xlwt.Workbook(filename)
-    newSheet = wb.add_sheet("Constructive")
-    for i in range(len(route)):
-        for j in range(len(route[i])):
-            newSheet.write(i, j, route[i][j])
-    wb.save(filename)
+def storeData(routes, distances, time, autonomy, name, instance):
+    wb = None
+    if(os.path.isfile("results/" + name + ".xls")):
+        rb = xlrd.open_workbook("results/" + name + ".xls", formatting_info=True)
+        wb = xl_copy(rb)
+    else:
+        wb = xlwt.Workbook("results/" + name + ".xls")
+    sheet = wb.add_sheet(instance)
+    feasable = 0
+    for i in range(len(routes)):
+        sheet.write(i, len(routes[i]), distances[i])
+        localFeasable = 0 if distances[i] <= autonomy else 1
+        feasable = feasable and localFeasable
+        sheet.write(i, len(routes[i])+1, localFeasable)
+        for j in range(len(routes[i])):
+            sheet.write(i, j, routes[i][j])
+    sheet.write(len(routes), 0, round(sum(distances), 2))
+    sheet.write(len(routes), 1, round(time, 3))
+    sheet.write(len(routes), 2, feasable)
+    wb.save("results/" + name + ".xls")

@@ -31,16 +31,14 @@ def implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness):
         vehicleRoutes[bestTruck].append(bestNode)
         unvisitedNodes.remove(bestNode)
         for i in range(vehicles):
-            nextNode, distance = getValidNearestNode(vehicleRoutes[i][-1], unvisitedNodes, distanceMatrix, vehicleLoads[i], vehicleDistances[i], autonomy, demands, allowUnfeasibleness)
-            if(nextNode == vehicleRoutes[i][-1] and nextNode != nodes[0]):
+            ret = hasToReturn(vehicleRoutes[i][-1], unvisitedNodes, distanceMatrix, vehicleLoads[i], vehicleDistances[i], autonomy, demands, allowUnfeasibleness)
+            if(ret):
                 vehicleDistances[i] += distanceMatrix[vehicleRoutes[i][-1][0]][0]
                 vehicleLoads[i] = capacity
                 vehicleRoutes[i].append(nodes[0])  
     routes = [list(map(lambda node:  node[0],nodes)) for nodes in vehicleRoutes]
     vehicleDistances = list (map(lambda x: round(x, 2),vehicleDistances))
-    print(routes)
-    print(vehicleDistances)
-    print(unvisitedNodes)
+
     return routes, vehicleDistances
 
 def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, autonomy, demands,  allowUnfeasibleness):
@@ -63,8 +61,14 @@ def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, a
     return bestTruck, nextNode
 
 def getValidNearestNode(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness):
-    validNodes = [node for node in nodes if (hasEnoughAutonomy(currentNode, node, distanceMatrix, traveledDistance, autonomy) or allowUnfeasibleness) and demands[node[0]] <= load and node != currentNode]
+    validNodes = [node for node in nodes if (hasEnoughAutonomy(currentNode, node, distanceMatrix, traveledDistance, autonomy) or allowUnfeasibleness) and demands[node[0]] <= load]
     return getNearestNode(currentNode, validNodes, distanceMatrix)
+
+def hasToReturn(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness):
+    for node in nodes:
+        if (hasEnoughAutonomy(currentNode, node, distanceMatrix, traveledDistance, autonomy) or allowUnfeasibleness) and demands[node[0]] <= load:
+            return False
+    return True
 
 def getNearestNode(currentNode, nodes, distanceMatrix):
     nearestNode = currentNode

@@ -1,19 +1,27 @@
 from read import getDistanceMatrix, getDemands
 import time
+import numpy
 
-def constructivoExperimental(nodes, vehicles, autonomy, capacity, allowUnfeasibleness= True):
+def noise(nodes, vehicles, autonomy, capacity, r, stdDeviation, nsol, allowUnfeasibleness= True):
     global time
-    distanceMatrix = getDistanceMatrix(nodes)
-    demands = getDemands(nodes)
     start = time.time()
-    routes, vehicleDistances, unvisitedNodes = implementation(nodes, vehicles - 1, autonomy, capacity, False, distanceMatrix, demands)
-    additionalRoute, vehicleDistance, _ = implementation([nodes[0]] + unvisitedNodes, 1, autonomy, capacity, True,  distanceMatrix, demands)
+    bestRoutes = None
+    bestDistances = None
+    for i in range(nsol):
+        routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, r, stdDeviation, allowUnfeasibleness)
+        if not bestDistances or sum(vehicleDistances) < sum(bestDistances):
+            bestRoutes = routes
+            bestDistances = vehicleDistances
     end = time.time()
     elapsedTime = end - start
-    return routes + additionalRoute, vehicleDistances + vehicleDistance, elapsedTime
+    return bestRoutes, bestDistances, elapsedTime
+
+   
 
 
-def implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness,  distanceMatrix, demands):
+def implementation(nodes, vehicles, autonomy, capacity, r, stdDeviation, allowUnfeasibleness):
+    distanceMatrix = getDistanceMatrix(nodes)
+    demands = getDemands(nodes)
     vehicleRoutes = []
     vehicleLoads = []
     vehicleDistances = []
@@ -24,7 +32,7 @@ def implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness,  di
         vehicleDistances.append(0)
 
     while(True):
-        bestTruck, bestNode = getBestArch([route[-1] for route in vehicleRoutes], unvisitedNodes, distanceMatrix, vehicleLoads, vehicleDistances, autonomy, demands, allowUnfeasibleness)
+        bestTruck, bestNode = getBestArch([route[-1] for route in vehicleRoutes], unvisitedNodes, distanceMatrix, vehicleLoads, vehicleDistances, autonomy, demands, r, stdDeviation, allowUnfeasibleness)
         if not bestNode:
             break
         vehicleDistances[bestTruck] += distanceMatrix[vehicleRoutes[bestTruck][-1][0]][bestNode[0]]
@@ -32,21 +40,21 @@ def implementation(nodes, vehicles, autonomy, capacity, allowUnfeasibleness,  di
         vehicleRoutes[bestTruck].append(bestNode)
         unvisitedNodes.remove(bestNode)
         for i in range(vehicles):
-            nextNode, distance = getValidNearestNode(vehicleRoutes[i][-1], unvisitedNodes, distanceMatrix, vehicleLoads[i], vehicleDistances[i], autonomy, demands, allowUnfeasibleness)
-            if(nextNode == vehicleRoutes[i][-1] and nextNode != nodes[0]):
+            ret = hasToReturn(vehicleRoutes[i][-1], unvisitedNodes, distanceMatrix, vehicleLoads[i], vehicleDistances[i], autonomy, demands, allowUnfeasibleness)
+            if(ret):
                 vehicleDistances[i] += distanceMatrix[vehicleRoutes[i][-1][0]][0]
                 vehicleLoads[i] = capacity
                 vehicleRoutes[i].append(nodes[0])  
     routes = [list(map(lambda node:  node[0],nodes)) for nodes in vehicleRoutes]
     vehicleDistances = list (map(lambda x: round(x, 2),vehicleDistances))
-    return routes, vehicleDistances, unvisitedNodes
+    return routes, vehicleDistances
 
-def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, autonomy, demands,  allowUnfeasibleness):
+def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, autonomy, demands,  r, stdDeviation, allowUnfeasibleness):
     nextNode = None
     bestTruck = None
     minDistance = -1
     for i in range(len(currentNodes)):
-        nearestNode, distance = getValidNearestNode(currentNodes[i], nodes, distanceMatrix, loads[i], traveledDistances[i], autonomy, demands, allowUnfeasibleness)
+        nearestNode, distance = getValidNearestNode(currentNodes[i], nodes, distanceMatrix, loads[i], traveledDistances[i], autonomy, demands, r, stdDeviation, allowUnfeasibleness)
         if(nearestNode == currentNodes[i]):
             continue
         elif(distance == minDistance and distance > 0):
@@ -60,15 +68,22 @@ def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, a
             nextNode = nearestNode
     return bestTruck, nextNode
 
-def getValidNearestNode(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness):
+def getValidNearestNode(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  r, stdDeviation, allowUnfeasibleness):
     validNodes = [node for node in nodes if (hasEnoughAutonomy(currentNode, node, distanceMatrix, traveledDistance, autonomy) or allowUnfeasibleness) and demands[node[0]] <= load and node != currentNode]
-    return getNearestNode(currentNode, validNodes, distanceMatrix)
+    return getNearestNode(currentNode, validNodes, distanceMatrix ,r, stdDeviation)
 
-def getNearestNode(currentNode, nodes, distanceMatrix):
+def hasToReturn(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness):
+    for node in nodes:
+        if (hasEnoughAutonomy(currentNode, node, distanceMatrix, traveledDistance, autonomy) or allowUnfeasibleness) and demands[node[0]] <= load:
+            return False
+    return True
+
+
+def getNearestNode(currentNode, nodes, distanceMatrix, r, stdDeviation):
     nearestNode = currentNode
     minDistance = -1
     for node in nodes:
-        if(distanceMatrix[currentNode[0]][node[0]] < minDistance or minDistance == -1):
+        if(distanceMatrix[currentNode[0]][node[0]] + numpy.random.normal(r, stdDeviation, 1)[0] < minDistance or minDistance == -1):
             minDistance = distanceMatrix[currentNode[0]][node[0]]
             nearestNode = node
     return nearestNode, minDistance

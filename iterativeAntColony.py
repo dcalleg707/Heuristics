@@ -2,16 +2,16 @@ from read import getDistanceMatrix, getDemands
 import time
 import random
 
-def antColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowUnfeasibleness=True):
+def iterativeAntColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, iteraciones, allowUnfeasibleness=True):
     global time
     start = time.time()
-    routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowUnfeasibleness)
+    routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, iteraciones, allowUnfeasibleness)
     end = time.time()
     elapsedTime = end - start
     return routes, vehicleDistances, elapsedTime
 
 
-def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowUnfeasibleness ):
+def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, iteraciones, allowUnfeasibleness ):
     distanceMatrix = getDistanceMatrix(nodes)
     demands = getDemands(nodes)
     
@@ -21,29 +21,21 @@ def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowU
         for j in range (len(nodes)):
             pheromoneMatrix[i].append(1)
     
+    minDistance = -1
     bestRoute = None
     bestDistances = None
-    over = False
-    minDistance = -1
-        
-    while(not over):
+    for z in range(iteraciones):
         antTrips = []
         solutionDistances = []
         for l in range(m):
-            route, distances = getAntRoute(nodes, autonomy, vehicles, distanceMatrix, capacity, demands, pheromoneMatrix, a, b, c, allowUnfeasibleness)
+            routes, distances = getAntRoute(nodes, autonomy, vehicles, distanceMatrix, capacity, demands, pheromoneMatrix, a, b, c, allowUnfeasibleness)
             distance = sum(distances)
             solutionDistances.append(distance)
-            antTrips.append(route)
             if(distance < minDistance or minDistance == -1):
-                bestRoute = route
+                bestRoute = routes
                 minDistance = distance
                 bestDistances = distances
-        
-        for i in range(len(solutionDistances) - 1):
-            if(solutionDistances[i] != solutionDistances[i+1]):
-                break
-            elif i == len(solutionDistances) - 2:
-                over = True
+            antTrips.append(routes)
 
         newPheromoneMatrix = list(map(lambda pheromoneRow: list(map( lambda x: x * (1 - p), pheromoneRow)), pheromoneMatrix ))
         for i in range(len(antTrips)):
@@ -93,7 +85,7 @@ def getBestArch(currentNodes, nodes, distanceMatrix, loads, traveledDistances, a
     for i in range(len(currentNodes)):
         truckCandidates = getvalidNodesDistances(currentNodes[i], nodes, distanceMatrix, loads[i], traveledDistances[i], autonomy, demands, allowUnfeasibleness)
         candidates += list(map( lambda x: x + [i], truckCandidates))
-        localProbability =  list(map( lambda x: (( 1 / max(x[0], 0.000000000001)) ** b) * (pheromoneMatrix[currentNodes[i][0]][x[1][0]] ** a) * ((1 / max(traveledDistances[i], 1)) ** c), truckCandidates))
+        localProbability =  list(map( lambda x: (( 1 / max(x[0], 0.0000001)) ** b) * (pheromoneMatrix[currentNodes[i][0]][x[1][0]] ** a) * ((1 / max(traveledDistances[i], 1)) ** c), truckCandidates))
         probabilities += localProbability
         sumedDivisor += sum(localProbability)
     
@@ -112,6 +104,12 @@ def getValidNearestNode(currentNode, nodes, distanceMatrix, load, traveledDistan
     validNodes = getValidNodes(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness)
     return getNearestNode(currentNode, validNodes, distanceMatrix)
 
+def getvalidNodesDistances(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness):
+    validNodes = getValidNodes(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness)
+    return [[distanceMatrix[currentNode[0]][node[0]], node]for node in validNodes]
+
+def getValidNodes(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness):
+    return  [node for node in nodes if (hasEnoughAutonomy(currentNode, node, distanceMatrix, traveledDistance, autonomy) or allowUnfeasibleness) and demands[node[0]] <= load and node != currentNode]
 
 def hasToReturn(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness):
     for node in nodes:
@@ -119,13 +117,6 @@ def hasToReturn(currentNode, nodes, distanceMatrix, load, traveledDistance, auto
             return False
     return True
 
-
-def getvalidNodesDistances(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness):
-    validNodes = getValidNodes(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness)
-    return [[distanceMatrix[currentNode[0]][node[0]], node]for node in validNodes]
-
-def getValidNodes(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness):
-    return  [node for node in nodes if (hasEnoughAutonomy(currentNode, node, distanceMatrix, traveledDistance, autonomy) or allowUnfeasibleness) and demands[node[0]] <= load and node != currentNode]
 
 def getNearestNode(currentNode, nodes, distanceMatrix):
     nearestNode = currentNode
