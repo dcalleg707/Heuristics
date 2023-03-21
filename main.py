@@ -9,34 +9,38 @@ from graphics import *
 from antColony import antColony
 from noise import noise
 
-file = "mtVRP1.txt"
-nodesNumber, vehicles, capacity, autonomy, deposit, nodes = getData(file)
+file = "mtVRP8.txt"
+
 alpha = 0.05
-nsol = 100
-m = 5
-Q = 100
+nsol = 30
+m = 3
+Q = 1
 a = 1
 b = 5
 c = 0.01
 p = 0.9
-niter = 50
+p2 = 0.5
+niter = 25
 r= 0
 stdDeviation = 5
 
 
-iterAntRoutes, iterAntDistances, iterAntTime = iterativeAntColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, niter)
-antRoutes, antDistances, antTime = antColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p)
-noiseRoutes, noiseDistances, noiseTime = noise(nodes, vehicles, autonomy, capacity, r, stdDeviation, nsol)
-graspRoutes, graspDistances, graspTime = grasp(nodes, vehicles, autonomy, capacity, alpha, nsol)
-routes, distances, time = constructivoOptimizado(nodes, vehicles, autonomy, capacity)
+for i in range(1, 13):
+    instance = "mtVRP" + str(i)
+    file =  instance + ".txt"
+    print(file)
+    nodesNumber, vehicles, capacity, autonomy, deposit, nodes = getData(file)
+    iterAntRoutes, iterAntDistances, iterAntTime = iterativeAntColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p2, niter)
+    antRoutes, antDistances, antTime = antColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p)
+    noiseRoutes, noiseDistances, noiseTime = noise(nodes, vehicles, autonomy, capacity, r, stdDeviation, nsol)
+    graspRoutes, graspDistances, graspTime = grasp(nodes, vehicles, autonomy, capacity, alpha, nsol)
+    routes, distances, time = constructivoOptimizado(nodes, vehicles, autonomy, capacity)
 
 
-storeData(iterAntRoutes, iterAntDistances, iterAntTime, autonomy, "limited_ACO", file)
-storeData(antRoutes, antDistances, antTime, autonomy, "ACO", file)
-storeData(noiseRoutes, noiseDistances, noiseTime, autonomy, "NOISE", file)
-storeData(graspRoutes, graspDistances, graspTime, autonomy, "GRASP", file)
-storeData(routes, distances, time, autonomy, "Constructivo", file)
-
-compare(iterAntRoutes, antRoutes, nodes, sum(iterAntDistances), sum(antDistances), "iter ants", "ants")
+    storeData(iterAntRoutes, iterAntDistances, iterAntTime, autonomy, "limited_ACO", instance)
+    storeData(antRoutes, antDistances, antTime, autonomy, "ACO", instance)
+    storeData(noiseRoutes, noiseDistances, noiseTime, autonomy, "NOISE", instance)
+    storeData(graspRoutes, graspDistances, graspTime, autonomy, "GRASP", instance)
+    storeData(routes, distances, time, autonomy, "Constructivo", instance)
 
 

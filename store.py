@@ -15,7 +15,7 @@ def storeData(routes, distances, time, autonomy, name, instance):
     for i in range(len(routes)):
         sheet.write(i, len(routes[i]), distances[i])
         localFeasable = 0 if distances[i] <= autonomy else 1
-        feasable = feasable and localFeasable
+        feasable = feasable or localFeasable
         sheet.write(i, len(routes[i])+1, localFeasable)
         for j in range(len(routes[i])):
             sheet.write(i, j, routes[i][j])
