@@ -5,10 +5,12 @@ import random
 def grasp(nodes, vehicles, autonomy, capacity, alpha, nsol, allowUnfeasibleness= True):
     global time
     start = time.time()
+    distanceMatrix = getDistanceMatrix(nodes)
+    demands = getDemands(nodes)
     bestRoutes = None
     bestDistances = None
     for i in range(nsol):
-        routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, alpha, allowUnfeasibleness)
+        routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, distanceMatrix, demands, alpha, allowUnfeasibleness)
         if not bestDistances or sum(vehicleDistances) < sum(bestDistances):
             bestRoutes = routes
             bestDistances = vehicleDistances
@@ -17,9 +19,8 @@ def grasp(nodes, vehicles, autonomy, capacity, alpha, nsol, allowUnfeasibleness=
     return bestRoutes, bestDistances, elapsedTime
 
 
-def implementation(nodes, vehicles, autonomy, capacity, alpha, allowUnfeasibleness ):
-    distanceMatrix = getDistanceMatrix(nodes)
-    demands = getDemands(nodes)
+def implementation(nodes, vehicles, autonomy, capacity, distanceMatrix, demands, alpha, allowUnfeasibleness ):
+    
     vehicleRoutes = []
     vehicleLoads = []
     vehicleDistances = []

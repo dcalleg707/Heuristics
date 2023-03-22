@@ -59,3 +59,15 @@ def compare(routesA, routesB, nodes, distanceA, distanceB, labelA, labelB):
     fig.suptitle(labelA +": " + str(round(distanceA, 2)) + " vs " + labelB +  ": "+str(round(distanceB, 2)))
     plt.show()
 
+def barGraphic(names, values, label):
+    fig, ax = plt.subplots(1, 1, figsize=(9, 9))
+    fig.suptitle(label)
+    ax.bar(names, values)
+    plt.show()
+
+def plotGraphic(names, values, label):
+    fig, ax = plt.subplots(1, 1, figsize=(9, 9))
+    fig.suptitle(label)
+    ax.plot(names, values)
+    plt.show()
+

@@ -9,28 +9,25 @@ from graphics import *
 from antColony import antColony
 from noise import noise
 
-file = "mtVRP8.txt"
-
 alpha = 0.05
 nsol = 30
 m = 3
-Q = 1
-a = 1
-b = 5
-c = 0.01
-p = 0.9
-p2 = 0.5
-niter = 25
+m2 = 7
+Q = 6
+a = 3
+b = 8
+c = 1.5
+p = 0.5
+niter = 11
 r= 0
-stdDeviation = 5
-
+stdDeviation = 2
 
 for i in range(1, 13):
     instance = "mtVRP" + str(i)
     file =  instance + ".txt"
     print(file)
     nodesNumber, vehicles, capacity, autonomy, deposit, nodes = getData(file)
-    iterAntRoutes, iterAntDistances, iterAntTime = iterativeAntColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p2, niter)
+    iterAntRoutes, iterAntDistances, iterAntTime = iterativeAntColony(nodes, vehicles, autonomy, capacity, m2, Q, a, b, c, p, niter)
     antRoutes, antDistances, antTime = antColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p)
     noiseRoutes, noiseDistances, noiseTime = noise(nodes, vehicles, autonomy, capacity, r, stdDeviation, nsol)
     graspRoutes, graspDistances, graspTime = grasp(nodes, vehicles, autonomy, capacity, alpha, nsol)

@@ -5,10 +5,12 @@ import numpy
 def noise(nodes, vehicles, autonomy, capacity, r, stdDeviation, nsol, allowUnfeasibleness= True):
     global time
     start = time.time()
+    distanceMatrix = getDistanceMatrix(nodes)
+    demands = getDemands(nodes)
     bestRoutes = None
     bestDistances = None
     for i in range(nsol):
-        routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, r, stdDeviation, allowUnfeasibleness)
+        routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, distanceMatrix, demands, r, stdDeviation, allowUnfeasibleness)
         if not bestDistances or sum(vehicleDistances) < sum(bestDistances):
             bestRoutes = routes
             bestDistances = vehicleDistances
@@ -19,9 +21,8 @@ def noise(nodes, vehicles, autonomy, capacity, r, stdDeviation, nsol, allowUnfea
    
 
 
-def implementation(nodes, vehicles, autonomy, capacity, r, stdDeviation, allowUnfeasibleness):
-    distanceMatrix = getDistanceMatrix(nodes)
-    demands = getDemands(nodes)
+def implementation(nodes, vehicles, autonomy, capacity, distanceMatrix, demands,  r, stdDeviation, allowUnfeasibleness):
+    
     vehicleRoutes = []
     vehicleLoads = []
     vehicleDistances = []

@@ -24,6 +24,7 @@ def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, iterac
     minDistance = -1
     bestRoute = None
     bestDistances = None
+    over = False
     for z in range(iteraciones):
         antTrips = []
         solutionDistances = []
@@ -37,6 +38,13 @@ def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, iterac
                 bestDistances = distances
             antTrips.append(routes)
 
+        for i in range(len(solutionDistances) - 1):
+            if(solutionDistances[i] != solutionDistances[i+1]):
+                break
+            elif i == len(solutionDistances) - 2:
+                over = True
+        if over:
+            break
         newPheromoneMatrix = list(map(lambda pheromoneRow: list(map( lambda x: x * (1 - p), pheromoneRow)), pheromoneMatrix ))
         for i in range(len(antTrips)):
             for route in antTrips[i]:
