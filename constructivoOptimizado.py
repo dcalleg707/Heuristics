@@ -65,6 +65,7 @@ def getValidNearestNode(currentNode, nodes, distanceMatrix, load, traveledDistan
     return getNearestNode(currentNode, validNodes, distanceMatrix)
 
 def hasToReturn(currentNode, nodes, distanceMatrix, load, traveledDistance, autonomy, demands,  allowUnfeasibleness):
+    if currentNode[0] == 0: return False
     for node in nodes:
         if (hasEnoughAutonomy(currentNode, node, distanceMatrix, traveledDistance, autonomy) or allowUnfeasibleness) and demands[node[0]] <= load:
             return False

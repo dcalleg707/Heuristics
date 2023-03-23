@@ -49,8 +49,8 @@ for i in range(1, 13):
     storeData(graspRoutes, graspDistances, graspTime, autonomy, "GRASP", instance)
     storeData(routes, distances, time, autonomy, "Constructivo", instance)
 
-    barGraphic(["cota inferior", "constructivo", "NOISE", "GRASP", "ACO", "limited ACO"], [cotaInferior, sum(distances), sum(noiseDistances), sum(graspDistances), sum(antDistances), sum(iterAntDistances)], instance)
-    barGraphic(["constructivo", "NOISE", "GRASP", "ACO", "limited ACO"], [time, noiseTime, graspTime, antTime, iterAntTime], instance)
+    #barGraphic(["cota inferior", "constructivo", "NOISE", "GRASP", "ACO", "limited ACO"], [cotaInferior, sum(distances), sum(noiseDistances), sum(graspDistances), sum(antDistances), sum(iterAntDistances)], instance)
+    #barGraphic(["constructivo", "NOISE", "GRASP", "ACO", "limited ACO"], [time, noiseTime, graspTime, antTime, iterAntTime], instance)
 
 """
 file =  "mtVRP3.txt"
