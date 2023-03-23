@@ -63,6 +63,8 @@ def barGraphic(names, values, label):
     fig, ax = plt.subplots(1, 1, figsize=(9, 9))
     fig.suptitle(label)
     ax.bar(names, values)
+    for i in range(len(names)):
+        plt.text(i ,values[i], round(values[i], 2))
     plt.show()
 
 def plotGraphic(names, values, label):
@@ -70,4 +72,5 @@ def plotGraphic(names, values, label):
     fig.suptitle(label)
     ax.plot(names, values)
     plt.show()
+    
 

@@ -2,16 +2,16 @@ from read import getDistanceMatrix, getDemands
 import time
 import random
 
-def antColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowUnfeasibleness=True):
+def antColony(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, initialPheromone, allowUnfeasibleness=True):
     global time
     start = time.time()
-    routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowUnfeasibleness)
+    routes, vehicleDistances = implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, initialPheromone, allowUnfeasibleness)
     end = time.time()
     elapsedTime = end - start
     return routes, vehicleDistances, elapsedTime
 
 
-def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowUnfeasibleness ):
+def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, initialPheromone, allowUnfeasibleness ):
     distanceMatrix = getDistanceMatrix(nodes)
     demands = getDemands(nodes)
     
@@ -19,7 +19,7 @@ def implementation(nodes, vehicles, autonomy, capacity, m, Q, a, b, c, p, allowU
     for i in range(len(nodes)):
         pheromoneMatrix.append([])
         for j in range (len(nodes)):
-            pheromoneMatrix[i].append(1)
+            pheromoneMatrix[i].append(initialPheromone)
     
     bestRoute = None
     bestDistances = None
