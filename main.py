@@ -552,6 +552,11 @@ p2= 0.3
 niter = 8
 r= 0
 stdDeviation = 2
+LS_nsol = 3
+Ti = 64
+tf = 0.01
+L = 20
+r = 0.7
 
 results = []
 algorithms = [crossTwoOptExecuter, crossSwapExecuter, threeOptExecuter, insertExecuter, twoOptExecuter, swapExecuter, crossInsertExecuter, subrouteSwapperExecuter]
@@ -581,7 +586,7 @@ for i in range(1, 13):
     VNSOpt_time = time.time()
 
     VNSMSRSP_start = time.time()
-    VNSMSRSP_solution =  VNSMSRSP(64, 0.01, 20, 0.7,3, limitTime = timeLimits[i-1])
+    VNSMSRSP_solution =  VNSMSRSP(Ti, Tf, L, r,LS_nsol, limitTime = timeLimits[i-1])
     VNSMSRSP_time = time.time() - VNSMSRSP_start
 
     results[i-1].append(antRoutes)
