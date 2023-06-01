@@ -16,6 +16,8 @@ import xlwt
 import os
 import xlrd
 from xlutils.copy import copy as xl_copy
+import copy
+import functools
 
 #Execution code at the end
 
@@ -519,6 +521,7 @@ def RVNS(routes, algorithmExecuters, bestImprovement = True, T = None, distanceM
   bestSolution = routes
   iter = 0
   algorithm = None
+  start = time.time()
   while len(algorithmExecuters) > 0:
     method = random.choice(distanceMethods)
     newAlgorithm = random.randint(0,  len(algorithmExecuters) -1)
@@ -543,6 +546,7 @@ def RVNS(routes, algorithmExecuters, bestImprovement = True, T = None, distanceM
 def RVNS2(routes, algorithmExecuters, bestImprovement = True, T = None, distanceMethods=[distanceOrInvalid], limitTime = None):
   bestSolution = routes
   algorithm = None
+  start = time.time()
   while len(algorithmExecuters) > 0:
     method = random.choice(distanceMethods)
     newAlgorithm = random.randint(0,  len(algorithmExecuters) -1)
